@@ -1,15 +1,15 @@
 # ScreenTranslate
 
-> Select text anywhere on your Mac. Press **⌘⇧T**. Done.
+> Select text anywhere on your Mac. Press your hotkey (default: **⌘⇧T**). Done.
 
-A lightweight macOS menu-bar accessibility app that translates any selected text system-wide — in Safari, Mail, Terminal, PDFs, or any other app — using a single keyboard shortcut.
+A lightweight macOS menu-bar accessibility app that translates any selected text system-wide — in Safari, Mail, Terminal, PDFs, or any other app — using a customizable keyboard shortcut.
 
 ---
 
 ## Features
 
 - 🌍 **Translate from anywhere** — works in every app that supports text selection
-- ⌨️ **Global hotkey** — `⌘⇧T` triggers translation instantly, no app-switching needed
+- ⌨️ **Customizable global hotkey** — record your own shortcut (e.g. `⌘⌥K`) to trigger translation instantly
 - 🔍 **Auto-detects source language** — no need to tell it what language you're reading
 - 💬 **Frosted-glass popup** — appears near your cursor, dismisses with `Esc` or a click outside
 - 📋 **One-tap copy** — copy the translation to your clipboard from the popup
@@ -32,7 +32,7 @@ A lightweight macOS menu-bar accessibility app that translates any selected text
 ### Option 1 — Run the pre-built binary
 
 ```bash
-open Translate.app
+open ScreenTranslate.app
 ```
 
 > Located in the project root. Grant Accessibility access when prompted, then start translating!
@@ -59,7 +59,7 @@ xcodebuild -project TranslateApp.xcodeproj \
 1. **Launch the app** — a `⊕` bubble icon appears in the menu bar
 2. **Grant Accessibility access** when prompted:
    `System Settings → Privacy & Security → Accessibility → ✅ ScreenTranslate`
-3. That's it — start selecting text and pressing `⌘⇧T`
+3. That's it — start selecting text and pressing your hotkey.
 
 ---
 
@@ -67,10 +67,11 @@ xcodebuild -project TranslateApp.xcodeproj \
 
 | Action | How |
 |---|---|
-| Translate selected text | Select text in any app → press `⌘⇧T` |
+| Translate selected text | Select text in any app → press your hotkey (default: `⌘⇧T`) |
 | Copy the translation | Click **Copy Translation** in the popup |
 | Dismiss the popup | Press `Esc` or click outside it |
 | Change target language | Menu bar icon → **Settings…** |
+| Record new shortcut | Menu bar icon → **Settings…** → Click on the hotkey badge and press new keys |
 | Pause the app | Menu bar icon → **Enable Translation** (toggle off) |
 | Quit | Menu bar icon → **Quit ScreenTranslate** |
 
@@ -82,7 +83,8 @@ xcodebuild -project TranslateApp.xcodeproj \
 Sources/
 ├── TranslateApp.swift          @main SwiftUI entry point
 ├── AppDelegate.swift           Status bar, orchestration
-├── HotkeyManager.swift         Global CGEventTap (⌘⇧T)
+├── HotkeyManager.swift         Global CGEventTap (dynamic hotkey check)
+├── ShortcutRecorderView.swift  Interactive keyboard shortcut recorder UI
 ├── AccessibilityHelper.swift   AX API text extraction + clipboard fallback
 ├── TranslationService.swift    MyMemory API + NLLanguageRecognizer
 ├── PopupState.swift            Observable state (loading / result / error)
@@ -90,7 +92,7 @@ Sources/
 ├── PopupView.swift             SwiftUI popup UI
 ├── SettingsView.swift          SwiftUI settings panel
 ├── PermissionsManager.swift    Accessibility permission polling
-├── AppSettings.swift           UserDefaults-backed preferences
+├── AppSettings.swift           UserDefaults-backed preferences & hotkey storage
 └── LanguageOption.swift        27 supported languages
 ```
 
@@ -118,7 +120,7 @@ To increase the daily limit, register a free account at mymemory.translated.net 
 ## Privacy
 
 - No data is collected or stored by this app
-- Selected text is sent **only** to the MyMemory translation API when you press `⌘⇧T`
+- Selected text is sent **only** to the MyMemory translation API when you press the hotkey
 - The app requires Accessibility permission solely to read your selected text; it does not monitor typing or other input
 
 ---
