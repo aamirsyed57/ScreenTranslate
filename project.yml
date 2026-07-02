@@ -1,0 +1,35 @@
+name: TranslateApp
+options:
+  bundleIdPrefix: com.macutils
+  deploymentTarget:
+    macOS: "12.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+  defaultConfig: Debug
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "12.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_HARDENED_RUNTIME: NO
+    CODE_SIGN_STYLE: Automatic
+    # Use local (ad-hoc) signing — no Apple Developer account needed
+    CODE_SIGN_IDENTITY: "-"
+
+targets:
+  TranslateApp:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+        createIntermediateGroups: true
+    settings:
+      base:
+        PRODUCT_NAME: Translate
+        PRODUCT_BUNDLE_IDENTIFIER: com.macutils.translate
+        INFOPLIST_FILE: Info.plist
+        CODE_SIGN_ENTITLEMENTS: TranslateApp.entitlements
+    scheme:
+      testTargets: []

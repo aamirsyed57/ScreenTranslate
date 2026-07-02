@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Hide from Dock — this is a pure menu-bar app -->
+    <key>LSUIElement</key>
+    <true/>
+
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+
+    <!-- Bundle identity -->
+    <key>CFBundleIdentifier</key>
+    <string>com.macutils.screentranslate</string>
+    <key>CFBundleName</key>
+    <string>ScreenTranslate</string>
+    <key>CFBundleDisplayName</key>
+    <string>ScreenTranslate</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <!-- Privacy usage descriptions -->
+    <key>NSAccessibilityUsageDescription</key>
+    <string>ScreenTranslate reads your selected text in other apps so it can be translated when you press the keyboard shortcut.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Translate sends keyboard events to copy selected text when the Accessibility API is unavailable.</string>
+
+    <!-- Minimum macOS version -->
+    <key>LSMinimumSystemVersion</key>
+    <string>12.0</string>
+</dict>
+</plist>

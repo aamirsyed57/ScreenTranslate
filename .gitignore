@@ -1,0 +1,28 @@
+# Xcode build artefacts
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Pre-built app bundle (build from source instead)
+ScreenTranslate.app/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode user-specific
+*.xcscmblueprint
+*.xccheckout
+
+# Swift Package Manager (not used here but good practice)
+.build/
+.swiftpm/
+
+# Instruments
+*.trace
