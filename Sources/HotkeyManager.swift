@@ -1,81 +1,94 @@
 import AppKit
-import CoreGraphics
+import Carbon
 
-/// Listens globally for ⌘⇧T and invokes `onHotkeyPressed`.
-/// Uses a listen-only CGEventTap so the event is NOT consumed
-/// and still reaches the frontmost application.
+/// Listens globally for keyboard shortcuts using the macOS Carbon framework.
+/// This method does NOT require Accessibility permission to register or listen
+/// to the global keyboard shortcut, preventing startup and event tap permission errors.
 final class HotkeyManager {
     static let shared = HotkeyManager()
 
     var onHotkeyPressed: (() -> Void)?
 
-    private var eventTap: CFMachPort?
-    private var runLoopSource: CFRunLoopSource?
+    private var hotkeyRef: EventHotKeyRef?
+    private var eventHandlerRef: EventHandlerRef?
 
     private init() {}
 
     func startListening() {
-        // If the tap is already successfully created and registered, do nothing.
-        if eventTap != nil { return }
+        stopListening()
 
-        let mask: CGEventMask = 1 << CGEventType.keyDown.rawValue
+        let s = AppSettings.shared
 
-        // The callback must be a non-capturing C function pointer.
-        // We pass `self` as userInfo (refcon) to reach the instance.
-        // The tap runs on the main run loop, so AppSettings.shared is safe to read here.
-        let callback: CGEventTapCallBack = { _, type, event, refcon -> Unmanaged<CGEvent>? in
-            guard type == .keyDown, let refcon = refcon else {
-                return Unmanaged.passRetained(event)
-            }
+        // Map Cocoa modifiers to Carbon flags
+        var carbonModifiers: UInt32 = 0
+        if s.hotkeyUsesCmd     { carbonModifiers |= UInt32(cmdKey) }
+        if s.hotkeyUsesShift   { carbonModifiers |= UInt32(shiftKey) }
+        if s.hotkeyUsesOption  { carbonModifiers |= UInt32(optionKey) }
+        if s.hotkeyUsesControl { carbonModifiers |= UInt32(controlKey) }
 
-            let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-            let flags   = event.flags
+        // Use a unique signature for this app hotkey
+        let hotkeyID = EventHotKeyID(signature: OSType(0x53635472), id: 1) // "ScTr"
 
-            // Build expected modifier flags from persisted settings
-            let s = AppSettings.shared
-            let hasCmd = flags.contains(.maskCommand)
-            let hasShift = flags.contains(.maskShift)
-            let hasOption = flags.contains(.maskAlternate)
-            let hasCtrl = flags.contains(.maskControl)
+        print("[HotkeyManager] Registering Carbon HotKey: keyCode=\(s.hotkeyKeyCode), modifiers=\(carbonModifiers)")
 
-            let isMatch = keyCode == Int64(s.hotkeyKeyCode)
-                       && hasCmd == s.hotkeyUsesCmd
-                       && hasShift == s.hotkeyUsesShift
-                       && hasOption == s.hotkeyUsesOption
-                       && hasCtrl == s.hotkeyUsesControl
-
-            if isMatch {
-                let manager = Unmanaged<HotkeyManager>.fromOpaque(refcon).takeUnretainedValue()
-                DispatchQueue.main.async { manager.onHotkeyPressed?() }
-            }
-
-            return Unmanaged.passRetained(event)
-        }
-
-        let userInfo = Unmanaged.passUnretained(self).toOpaque()
-        eventTap = CGEvent.tapCreate(
-            tap: .cgSessionEventTap,
-            place: .headInsertEventTap,
-            options: .listenOnly,
-            eventsOfInterest: mask,
-            callback: callback,
-            userInfo: userInfo
+        let status = RegisterEventHotKey(
+            UInt32(s.hotkeyKeyCode),
+            carbonModifiers,
+            hotkeyID,
+            GetApplicationEventTarget(),
+            0,
+            &hotkeyRef
         )
 
-        guard let tap = eventTap else {
-            print("[HotkeyManager] Could not create event tap — Accessibility permission missing.")
+        guard status == noErr else {
+            print("[HotkeyManager] Failed to register Carbon HotKey. Error status: \(status)")
             return
         }
 
-        runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
-        CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
-        CGEvent.tapEnable(tap: tap, enable: true)
+        // Set up the event handler specification for kEventHotKeyPressed
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
+
+        let handlerCallback: EventHandlerUPP = { _, event, userInfo -> OSStatus in
+            guard let userInfo = userInfo else { return noErr }
+            let manager = Unmanaged<HotkeyManager>.fromOpaque(userInfo).takeUnretainedValue()
+
+            print("[HotkeyManager] Carbon HotKey pressed! Triggering action.")
+            DispatchQueue.main.async {
+                manager.onHotkeyPressed?()
+            }
+            return noErr
+        }
+
+        let selfPointer = Unmanaged.passUnretained(self).toOpaque()
+        let handlerStatus = InstallEventHandler(
+            GetApplicationEventTarget(),
+            handlerCallback,
+            1,
+            &eventType,
+            selfPointer,
+            &eventHandlerRef
+        )
+
+        if handlerStatus != noErr {
+            print("[HotkeyManager] Failed to install Carbon Event Handler. Error status: \(handlerStatus)")
+        } else {
+            print("[HotkeyManager] Carbon HotKey and event handler registered successfully.")
+        }
     }
 
     func stopListening() {
-        if let tap = eventTap { CGEvent.tapEnable(tap: tap, enable: false) }
-        if let src = runLoopSource { CFRunLoopRemoveSource(CFRunLoopGetCurrent(), src, .commonModes) }
-        eventTap = nil
-        runLoopSource = nil
+        if let ref = hotkeyRef {
+            UnregisterEventHotKey(ref)
+            hotkeyRef = nil
+            print("[HotkeyManager] Unregistered Carbon HotKey.")
+        }
+        if let handler = eventHandlerRef {
+            RemoveEventHandler(handler)
+            eventHandlerRef = nil
+            print("[HotkeyManager] Removed Carbon event handler.")
+        }
     }
 }

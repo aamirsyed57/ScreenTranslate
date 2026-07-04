@@ -4,6 +4,10 @@ import SwiftUI
 struct TranslateApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
+    init() {
+        setbuf(stdout, nil)
+    }
+
     var body: some Scene {
         // Pure menu-bar app — no dock window.
         // AppDelegate handles the NSStatusItem and popup.
