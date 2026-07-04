@@ -10,12 +10,12 @@ A lightweight macOS menu-bar accessibility app that translates any selected text
 
 - 🌍 **Translate from anywhere** — works in every app that supports text selection
 - ⌨️ **Customizable global hotkey** — record your own shortcut (e.g. `⌘⌥K`) to trigger translation instantly
-- 🔍 **Auto-detects source language** — no need to tell it what language you're reading
+- 🔍 **Auto-detect or manually set source language** — choose auto-detection or override it on-the-fly directly from the translation bubble
 - 💬 **Frosted-glass popup** — appears near your cursor, dismisses with `Esc` or a click outside
 - 📋 **One-tap copy** — copy the translation to your clipboard from the popup
 - 🎛️ **27 target languages** — English, Spanish, French, German, Japanese, Arabic, and more
 - 🔒 **Privacy-first** — text is only sent to the translation API when you press the hotkey
-- 🆓 **Free** — uses the [MyMemory](https://mymemory.translated.net) API, no account or API key required
+- 🆓 **Free** — no account or API key required
 
 ---
 
@@ -70,7 +70,8 @@ xcodebuild -project TranslateApp.xcodeproj \
 | Translate selected text | Select text in any app → press your hotkey (default: `⌘⇧T`) |
 | Copy the translation | Click **Copy Translation** in the popup |
 | Dismiss the popup | Press `Esc` or click outside it |
-| Change target language | Menu bar icon → **Settings…** |
+| Change default languages | Menu bar icon → **Settings…** → Select 'Translate from' and 'Translate to' |
+| Override source language on the fly | Click on the source language flag/name pill inside the translation popup |
 | Record new shortcut | Menu bar icon → **Settings…** → Click on the hotkey badge and press new keys |
 | Pause the app | Menu bar icon → **Enable Translation** (toggle off) |
 | Quit | Menu bar icon → **Quit ScreenTranslate** |
@@ -86,13 +87,13 @@ Sources/
 ├── HotkeyManager.swift         Global CGEventTap (dynamic hotkey check)
 ├── ShortcutRecorderView.swift  Interactive keyboard shortcut recorder UI
 ├── AccessibilityHelper.swift   AX API text extraction + clipboard fallback
-├── TranslationService.swift    MyMemory API + NLLanguageRecognizer
+├── TranslationService.swift    Google Translate API + MyMemory fallback
 ├── PopupState.swift            Observable state (loading / result / error)
 ├── PopupWindowController.swift NSPanel with NSVisualEffectView (frosted glass)
 ├── PopupView.swift             SwiftUI popup UI
 ├── SettingsView.swift          SwiftUI settings panel
 ├── PermissionsManager.swift    Accessibility permission polling
-├── AppSettings.swift           UserDefaults-backed preferences & hotkey storage
+├── AppSettings.swift           UserDefaults preferences & hotkey storage
 └── LanguageOption.swift        27 supported languages
 ```
 
@@ -108,20 +109,19 @@ Sources/
 
 ## Translation API
 
-Uses the **[MyMemory Translated](https://mymemory.translated.net)** free API:
+Uses **Google Translate** (unofficial endpoint) as the primary translation provider:
 - No account or API key required
-- 5,000 characters per day (anonymous usage)
-- Source language is auto-detected on-device via Apple's `NLLanguageRecognizer`
-
-To increase the daily limit, register a free account at mymemory.translated.net and add your email to the API request (see `TranslationService.swift`).
+- High-speed, unlimited daily requests
+- Automatically falls back to the **MyMemory** API if Google is unreachable
+- Source language is auto-detected on-device via Apple's `NLLanguageRecognizer` when set to Auto-detect
 
 ---
 
 ## Privacy
 
 - No data is collected or stored by this app
-- Selected text is sent **only** to the MyMemory translation API when you press the hotkey
-- The app requires Accessibility permission solely to read your selected text; it does not monitor typing or other input
+- Selected text is sent **only** to the translation API when you trigger a translation
+- The app requires Accessibility permission solely to read your selected text; it does not monitor typing or other inputs
 
 ---
 
