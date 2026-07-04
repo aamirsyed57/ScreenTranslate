@@ -113,6 +113,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard AppSettings.shared.isEnabled else { return }
         guard !isTranslating else { return }
 
+        // Sync local cache with the system status immediately
+        PermissionsManager.shared.refresh()
+
         guard PermissionsManager.shared.hasAccessibilityPermission else {
             showPermissionAlert()
             return
@@ -173,9 +176,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let alert = NSAlert()
         alert.messageText = "Accessibility Permission Required"
         alert.informativeText = """
-            Translate needs Accessibility access to read selected text from other apps.
+            ScreenTranslate needs Accessibility access to read selected text from other apps.
 
-            Please go to System Settings → Privacy & Security → Accessibility and enable Translate.
+            Please go to System Settings → Privacy & Security → Accessibility and enable ScreenTranslate.
             """
         alert.addButton(withTitle: "Open System Settings")
         alert.addButton(withTitle: "Later")
