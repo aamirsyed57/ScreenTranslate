@@ -5,7 +5,15 @@ import ApplicationServices
 final class PermissionsManager: ObservableObject {
     static let shared = PermissionsManager()
 
-    @Published private(set) var hasAccessibilityPermission: Bool = false
+    @Published private(set) var hasAccessibilityPermission: Bool = false {
+        didSet {
+            if hasAccessibilityPermission {
+                // Automatically recreate or enable the hotkey listener once permission is granted at runtime.
+                // We call startListening on the main actor.
+                HotkeyManager.shared.startListening()
+            }
+        }
+    }
 
     private var pollTimer: Timer?
 

@@ -41,11 +41,11 @@ open ScreenTranslate.app
 
 ```bash
 # Open in Xcode
-open TranslateApp.xcodeproj
+open ScreenTranslate.xcodeproj
 
 # Or build from the command line
-xcodebuild -project TranslateApp.xcodeproj \
-           -scheme TranslateApp \
+xcodebuild -project ScreenTranslate.xcodeproj \
+           -scheme ScreenTranslate \
            -configuration Debug \
            build
 ```

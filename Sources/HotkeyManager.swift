@@ -15,7 +15,8 @@ final class HotkeyManager {
     private init() {}
 
     func startListening() {
-        guard eventTap == nil else { return }
+        // If the tap is already successfully created and registered, do nothing.
+        if eventTap != nil { return }
 
         let mask: CGEventMask = 1 << CGEventType.keyDown.rawValue
 
@@ -66,7 +67,7 @@ final class HotkeyManager {
         )
 
         guard let tap = eventTap else {
-            print("[HotkeyManager] Could not create event tap — Accessibility permission required.")
+            print("[HotkeyManager] Could not create event tap — Accessibility permission missing.")
             return
         }
 

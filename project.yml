@@ -1,4 +1,4 @@
-name: TranslateApp
+name: ScreenTranslate
 options:
   bundleIdPrefix: com.macutils
   deploymentTarget:
@@ -19,7 +19,7 @@ settings:
     CODE_SIGN_IDENTITY: "-"
 
 targets:
-  TranslateApp:
+  ScreenTranslate:
     type: application
     platform: macOS
     sources:
@@ -27,9 +27,9 @@ targets:
         createIntermediateGroups: true
     settings:
       base:
-        PRODUCT_NAME: Translate
-        PRODUCT_BUNDLE_IDENTIFIER: com.macutils.translate
+        PRODUCT_NAME: ScreenTranslate
+        PRODUCT_BUNDLE_IDENTIFIER: com.macutils.screentranslate
         INFOPLIST_FILE: Info.plist
-        CODE_SIGN_ENTITLEMENTS: TranslateApp.entitlements
+        CODE_SIGN_ENTITLEMENTS: ScreenTranslate.entitlements
     scheme:
       testTargets: []

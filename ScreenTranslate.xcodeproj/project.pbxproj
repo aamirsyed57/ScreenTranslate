@@ -37,8 +37,8 @@
 		AA00000C /* LanguageOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageOption.swift; sourceTree = "<group>"; };
 		AA00000D /* ShortcutRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderView.swift; sourceTree = "<group>"; };
 		AA000010 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA000011 /* TranslateApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TranslateApp.entitlements; sourceTree = "<group>"; };
-		AA000020 /* Translate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Translate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA000011 /* ScreenTranslate.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenTranslate.entitlements; sourceTree = "<group>"; };
+		AA000020 /* ScreenTranslate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenTranslate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,7 +55,7 @@
 		AA000040 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA000020 /* Translate.app */,
+				AA000020 /* ScreenTranslate.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,7 +85,7 @@
 			children = (
 				AA000041 /* Sources */,
 				AA000010 /* Info.plist */,
-				AA000011 /* TranslateApp.entitlements */,
+				AA000011 /* ScreenTranslate.entitlements */,
 				AA000040 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -93,9 +93,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA000050 /* TranslateApp */ = {
+		AA000050 /* ScreenTranslate */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA000070 /* Build configuration list for PBXNativeTarget "TranslateApp" */;
+			buildConfigurationList = AA000070 /* Build configuration list for PBXNativeTarget "ScreenTranslate" */;
 			buildPhases = (
 				AA000060 /* Sources */,
 				AA000030 /* Frameworks */,
@@ -105,9 +105,9 @@
 			);
 			dependencies = (
 			);
-			name = TranslateApp;
-			productName = Translate;
-			productReference = AA000020 /* Translate.app */;
+			name = ScreenTranslate;
+			productName = ScreenTranslate;
+			productReference = AA000020 /* ScreenTranslate.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -125,7 +125,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AA000075 /* Build configuration list for PBXProject "TranslateApp" */;
+			buildConfigurationList = AA000075 /* Build configuration list for PBXProject "ScreenTranslate" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -138,7 +138,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA000050 /* TranslateApp */,
+				AA000050 /* ScreenTranslate */,
 			);
 		};
 /* End PBXProject section */
@@ -299,7 +299,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = TranslateApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ScreenTranslate.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -323,7 +323,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = TranslateApp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ScreenTranslate.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -346,7 +346,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA000070 /* Build configuration list for PBXNativeTarget "TranslateApp" */ = {
+		AA000070 /* Build configuration list for PBXNativeTarget "ScreenTranslate" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA000082 /* Debug */,
@@ -355,7 +355,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA000075 /* Build configuration list for PBXProject "TranslateApp" */ = {
+		AA000075 /* Build configuration list for PBXProject "ScreenTranslate" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA000080 /* Debug */,
