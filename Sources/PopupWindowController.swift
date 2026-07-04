@@ -151,17 +151,22 @@ final class PopupWindowController: NSObject {
 
     private func installDismissMonitor() {
         removeDismissMonitor()
-        dismissMonitor = NSEvent.addGlobalMonitorForEvents(
-            matching: [.leftMouseDown, .rightMouseDown, .keyDown]
-        ) { [weak self] event in
-            guard let self = self, let panel = self.panel, panel.isVisible else { return }
+        // Delay monitor activation slightly to prevent the triggering hotkey event
+        // or click from immediately dismissing the window.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self, self.dismissMonitor == nil else { return }
+            self.dismissMonitor = NSEvent.addGlobalMonitorForEvents(
+                matching: [.leftMouseDown, .rightMouseDown, .keyDown]
+            ) { [weak self] event in
+                guard let self = self, let panel = self.panel, panel.isVisible else { return }
 
-            if event.type == .keyDown, event.keyCode == 53 {   // Esc
-                self.dismiss(); return
-            }
-            if event.type == .leftMouseDown || event.type == .rightMouseDown {
-                let loc = NSEvent.mouseLocation
-                if !panel.frame.contains(loc) { self.dismiss() }
+                if event.type == .keyDown, event.keyCode == 53 {   // Esc
+                    self.dismiss(); return
+                }
+                if event.type == .leftMouseDown || event.type == .rightMouseDown {
+                    let loc = NSEvent.mouseLocation
+                    if !panel.frame.contains(loc) { self.dismiss() }
+                }
             }
         }
     }
