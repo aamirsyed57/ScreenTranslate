@@ -108,14 +108,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard AppSettings.shared.isEnabled else { return }
         guard !isTranslating else { return }
 
-        // Sync local cache with the system status immediately
-        PermissionsManager.shared.refresh()
-
-        guard PermissionsManager.shared.hasAccessibilityPermission else {
-            showPermissionAlert()
-            return
-        }
-
         isTranslating = true
         let cursorLocation = NSEvent.mouseLocation
         popup.showLoading(near: cursorLocation)
@@ -125,7 +117,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             defer { self.isTranslating = false }
 
             guard let text = await AccessibilityHelper.shared.getSelectedText() else {
-                self.popup.showError("No text selected.\nHighlight some text in any app, then press ⌘⇧T.")
+                // If text retrieval fails, verify if it was due to missing accessibility permissions
+                PermissionsManager.shared.refresh()
+                self.popup.dismiss()
+                
+                if !PermissionsManager.shared.hasAccessibilityPermission {
+                    self.showPermissionAlert()
+                } else {
+                    // Alert window or floating error popup
+                    self.popup.showLoading(near: cursorLocation) // show panel briefly to display error
+                    self.popup.showError("No text selected.\nHighlight some text in any app, then press your hotkey.")
+                }
                 return
             }
 
