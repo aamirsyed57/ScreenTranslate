@@ -21,11 +21,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         popup.state.onReTranslate = { [weak self] overrideCode in
             self?.reTranslate(overrideSourceCode: overrideCode)
         }
-
-        // Prompt for Accessibility on first launch
-        if !PermissionsManager.shared.hasAccessibilityPermission {
-            PermissionsManager.shared.requestPermission()
-        }
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool { true }

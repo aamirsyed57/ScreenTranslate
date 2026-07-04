@@ -33,20 +33,16 @@ final class HotkeyManager {
 
             // Build expected modifier flags from persisted settings
             let s = AppSettings.shared
-            var expected: CGEventFlags = []
-            if s.hotkeyUsesCmd     { expected.insert(.maskCommand) }
-            if s.hotkeyUsesShift   { expected.insert(.maskShift) }
-            if s.hotkeyUsesOption  { expected.insert(.maskAlternate) }
-            if s.hotkeyUsesControl { expected.insert(.maskControl) }
-
-            // Only compare the four user-facing modifier bits to ignore NumLock etc.
-            let relevantMask: UInt64 = CGEventFlags.maskCommand.rawValue
-                | CGEventFlags.maskShift.rawValue
-                | CGEventFlags.maskAlternate.rawValue
-                | CGEventFlags.maskControl.rawValue
+            let hasCmd = flags.contains(.maskCommand)
+            let hasShift = flags.contains(.maskShift)
+            let hasOption = flags.contains(.maskAlternate)
+            let hasCtrl = flags.contains(.maskControl)
 
             let isMatch = keyCode == Int64(s.hotkeyKeyCode)
-                       && (flags.rawValue & relevantMask) == (expected.rawValue & relevantMask)
+                       && hasCmd == s.hotkeyUsesCmd
+                       && hasShift == s.hotkeyUsesShift
+                       && hasOption == s.hotkeyUsesOption
+                       && hasCtrl == s.hotkeyUsesControl
 
             if isMatch {
                 let manager = Unmanaged<HotkeyManager>.fromOpaque(refcon).takeUnretainedValue()
