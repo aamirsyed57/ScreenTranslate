@@ -1,6 +1,7 @@
 import AppKit
 import ApplicationServices
 
+@MainActor
 final class PermissionsManager: ObservableObject {
     static let shared = PermissionsManager()
 
@@ -13,15 +14,17 @@ final class PermissionsManager: ObservableObject {
         startPolling()
     }
 
-    /// Re-check the current permission state.
+    /// Re-check the current permission state without showing a prompt.
     func refresh() {
-        hasAccessibilityPermission = AXIsProcessTrusted()
+        // Querying with prompt option explicitly set to false prevents OS prompts on check
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false] as CFDictionary
+        hasAccessibilityPermission = AXIsProcessTrustedWithOptions(options)
     }
 
     /// Prompt the OS accessibility dialog AND open System Settings.
     func requestPermission() {
-        let opts = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as String: true]
-        AXIsProcessTrustedWithOptions(opts as CFDictionary)
+        let opts = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as String: true] as CFDictionary
+        AXIsProcessTrustedWithOptions(opts)
         openSettings()
     }
 
@@ -35,9 +38,13 @@ final class PermissionsManager: ObservableObject {
 
     private func startPolling() {
         pollTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
-            DispatchQueue.main.async { self?.refresh() }
+            Task { @MainActor in
+                self?.refresh()
+            }
         }
     }
 
-    deinit { pollTimer?.invalidate() }
+    deinit {
+        pollTimer?.invalidate()
+    }
 }
