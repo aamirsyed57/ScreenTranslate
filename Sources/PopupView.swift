@@ -105,7 +105,31 @@ struct PopupView: View {
 
     private func languagePillRow(_ r: TranslationResult) -> some View {
         HStack(spacing: 6) {
-            langPill(flag: flagFor(r.detectedSourceCode), name: r.detectedSourceLanguage)
+            Menu {
+                Button(action: { state.onReTranslate?("auto") }) {
+                    Text("🌐  Auto-detect")
+                }
+                Divider()
+                ForEach(LanguageOption.all) { lang in
+                    Button(action: { state.onReTranslate?(lang.id) }) {
+                        Text("\(lang.flag)  \(lang.name)")
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(flagFor(r.detectedSourceCode)).font(.system(size: 12))
+                    Text(r.detectedSourceLanguage)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.secondary)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 8))
+                        .foregroundColor(.secondary.opacity(0.8))
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.white.opacity(0.09), in: Capsule())
+            }
+            .buttonStyle(.plain)
 
             Image(systemName: "arrow.right")
                 .font(.system(size: 10, weight: .bold))

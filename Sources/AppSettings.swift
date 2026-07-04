@@ -12,6 +12,10 @@ final class AppSettings: ObservableObject {
         didSet { UserDefaults.standard.set(targetLanguageCode, forKey: Keys.targetLanguageCode) }
     }
 
+    @Published var sourceLanguageCode: String {
+        didSet { UserDefaults.standard.set(sourceLanguageCode, forKey: Keys.sourceLanguageCode) }
+    }
+
     @Published var showSourceText: Bool {
         didSet { UserDefaults.standard.set(showSourceText, forKey: Keys.showSourceText) }
     }
@@ -38,6 +42,7 @@ final class AppSettings: ObservableObject {
     private enum Keys {
         static let isEnabled           = "isEnabled"
         static let targetLanguageCode  = "targetLanguageCode"
+        static let sourceLanguageCode  = "sourceLanguageCode"
         static let showSourceText      = "showSourceText"
         static let hotkeyKeyCode       = "hotkeyKeyCode"
         static let hotkeyUsesCmd       = "hotkeyUsesCmd"
@@ -50,6 +55,7 @@ final class AppSettings: ObservableObject {
         let d = UserDefaults.standard
         self.isEnabled           = d.object(forKey: Keys.isEnabled)          as? Bool   ?? true
         self.targetLanguageCode  = d.string(forKey: Keys.targetLanguageCode)             ?? "en"
+        self.sourceLanguageCode  = d.string(forKey: Keys.sourceLanguageCode)             ?? "auto"
         self.showSourceText      = d.object(forKey: Keys.showSourceText)     as? Bool   ?? true
         self.hotkeyKeyCode       = d.object(forKey: Keys.hotkeyKeyCode)      as? Int    ?? 17
         self.hotkeyUsesCmd       = d.object(forKey: Keys.hotkeyUsesCmd)      as? Bool   ?? true

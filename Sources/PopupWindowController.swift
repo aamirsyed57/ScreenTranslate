@@ -59,7 +59,7 @@ final class PopupWindowController: NSObject {
 
     // MARK: - Private state
 
-    private let state = PopupState()
+    let state = PopupState()
     private var panel: NSPanel?
     private var hostingView: NSHostingView<PopupView>?
     private var dismissMonitor: Any?

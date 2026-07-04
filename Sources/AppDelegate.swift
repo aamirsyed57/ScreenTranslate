@@ -17,6 +17,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         buildStatusItem()
         startHotkeyListener()
 
+        // Handle source language override from the popup view
+        popup.state.onReTranslate = { [weak self] overrideCode in
+            self?.reTranslate(overrideSourceCode: overrideCode)
+        }
+
         // Prompt for Accessibility on first launch
         if !PermissionsManager.shared.hasAccessibilityPermission {
             PermissionsManager.shared.requestPermission()
@@ -80,7 +85,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let view = SettingsView()
             let hosting = NSHostingView(rootView: view)
             let win = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 420, height: 490),
+                contentRect: NSRect(x: 0, y: 0, width: 420, height: 520),
                 styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered,
                 defer: false
@@ -130,6 +135,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 let result = try await TranslationService.shared.translate(
                     text: text,
                     targetCode: AppSettings.shared.targetLanguageCode
+                )
+                self.popup.showResult(result)
+            } catch {
+                self.popup.showError(error.localizedDescription)
+            }
+        }
+    }
+
+    private func reTranslate(overrideSourceCode: String) {
+        guard !isTranslating else { return }
+        guard let currentResult = popup.state.result else { return }
+
+        isTranslating = true
+        popup.state.phase = .loading
+
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            defer { self.isTranslating = false }
+
+            do {
+                let result = try await TranslationService.shared.translate(
+                    text: currentResult.originalText,
+                    targetCode: AppSettings.shared.targetLanguageCode,
+                    overrideSourceCode: overrideSourceCode
                 )
                 self.popup.showResult(result)
             } catch {

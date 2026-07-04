@@ -21,7 +21,7 @@ struct SettingsView: View {
                 .padding(22)
             }
         }
-        .frame(width: 420, height: 490)
+        .frame(width: 420, height: 520)
     }
 
     // MARK: - Header
@@ -103,18 +103,35 @@ struct SettingsView: View {
 
     private var translationSection: some View {
         SectionCard(title: "Translation", icon: "globe", color: .indigo) {
-            HStack {
-                Text("Translate to")
-                    .font(.system(size: 13))
-                Spacer()
-                Picker("", selection: $settings.targetLanguageCode) {
-                    ForEach(LanguageOption.all) { lang in
-                        Text("\(lang.flag)  \(lang.name)").tag(lang.id)
+            VStack(spacing: 12) {
+                HStack {
+                    Text("Translate from")
+                        .font(.system(size: 13))
+                    Spacer()
+                    Picker("", selection: $settings.sourceLanguageCode) {
+                        Text("🌐  Auto-detect").tag("auto")
+                        ForEach(LanguageOption.all) { lang in
+                            Text("\(lang.flag)  \(lang.name)").tag(lang.id)
+                        }
                     }
+                    .labelsHidden()
+                    .pickerStyle(.menu)
+                    .frame(width: 210)
                 }
-                .labelsHidden()
-                .pickerStyle(.menu)
-                .frame(width: 210)
+
+                HStack {
+                    Text("Translate to")
+                        .font(.system(size: 13))
+                    Spacer()
+                    Picker("", selection: $settings.targetLanguageCode) {
+                        ForEach(LanguageOption.all) { lang in
+                            Text("\(lang.flag)  \(lang.name)").tag(lang.id)
+                        }
+                    }
+                    .labelsHidden()
+                    .pickerStyle(.menu)
+                    .frame(width: 210)
+                }
             }
         }
     }

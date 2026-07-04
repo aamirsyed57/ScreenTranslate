@@ -41,17 +41,20 @@ final class TranslationService {
 
     /// Translate `text` to `targetCode` (ISO 639-1).
     /// Tries Google Translate (unofficial, no key/limit) first, falls back to MyMemory.
-    func translate(text: String, targetCode: String) async throws -> TranslationResult {
+    /// If `overrideSourceCode` is provided (e.g. 'auto' or 'fr'), it will use that instead of the setting.
+    func translate(text: String, targetCode: String, overrideSourceCode: String? = nil) async throws -> TranslationResult {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { throw TranslationError.emptyText }
 
+        let sourceSetting = overrideSourceCode ?? AppSettings.shared.sourceLanguageCode
+
         // 1️⃣  Primary: unofficial Google Translate endpoint — no API key, no daily limit
-        if let result = try? await translateViaGoogle(text: trimmed, targetCode: targetCode) {
+        if let result = try? await translateViaGoogle(text: trimmed, targetCode: targetCode, sourceSetting: sourceSetting) {
             return result
         }
 
         // 2️⃣  Fallback: MyMemory free API
-        if let result = try? await translateViaMyMemory(text: trimmed, targetCode: targetCode) {
+        if let result = try? await translateViaMyMemory(text: trimmed, targetCode: targetCode, sourceSetting: sourceSetting) {
             return result
         }
 
@@ -65,11 +68,11 @@ final class TranslationService {
     //         ?client=gtx&sl=auto&tl=<target>&dt=t&q=<text>
     // Response: [ [[translated, original], …], null, detectedLangCode, … ]
 
-    private func translateViaGoogle(text: String, targetCode: String) async throws -> TranslationResult {
+    private func translateViaGoogle(text: String, targetCode: String, sourceSetting: String) async throws -> TranslationResult {
         var comps = URLComponents(string: "https://translate.googleapis.com/translate_a/single")!
         comps.queryItems = [
             URLQueryItem(name: "client", value: "gtx"),
-            URLQueryItem(name: "sl",     value: "auto"),
+            URLQueryItem(name: "sl",     value: sourceSetting),
             URLQueryItem(name: "tl",     value: targetCode),
             URLQueryItem(name: "dt",     value: "t"),
             URLQueryItem(name: "q",      value: text),
@@ -88,9 +91,9 @@ final class TranslationService {
         let translated = segments.compactMap { $0[safe: 0] as? String }.joined()
         guard !translated.isEmpty else { throw TranslationError.parsing }
 
-        // Detected source language is at outer[2]
-        let sourceCode = (outer[safe: 2] as? String) ?? detectLanguage(in: text)
-        let sourceName = Locale(identifier: "en").localizedString(forLanguageCode: sourceCode) ?? sourceCode
+        // Detected source language is at outer[2] (if auto), otherwise we use the requested sourceSetting
+        let sourceCode = sourceSetting == "auto" ? ((outer[safe: 2] as? String) ?? detectLanguage(in: text)) : sourceSetting
+        let sourceName = sourceCode == "auto" ? "Auto-detect" : (Locale(identifier: "en").localizedString(forLanguageCode: sourceCode) ?? sourceCode)
 
         return TranslationResult(
             originalText: text,
@@ -103,9 +106,9 @@ final class TranslationService {
 
     // MARK: - MyMemory (fallback)
 
-    private func translateViaMyMemory(text: String, targetCode: String) async throws -> TranslationResult {
-        let sourceCode = detectLanguage(in: text)
-        let sourceName = Locale(identifier: "en").localizedString(forLanguageCode: sourceCode) ?? sourceCode
+    private func translateViaMyMemory(text: String, targetCode: String, sourceSetting: String) async throws -> TranslationResult {
+        let sourceCode = sourceSetting == "auto" ? detectLanguage(in: text) : sourceSetting
+        let sourceName = sourceCode == "auto" ? "Auto-detect" : (Locale(identifier: "en").localizedString(forLanguageCode: sourceCode) ?? sourceCode)
 
         var comps = URLComponents(string: "https://api.mymemory.translated.net/get")!
         comps.queryItems = [
