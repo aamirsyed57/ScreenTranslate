@@ -56,31 +56,38 @@ struct PopupView: View {
     // MARK: - Result
 
     private func resultView(_ r: TranslationResult) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 12) {
             // Language route pill
             languagePillRow(r)
 
             Divider()
                 .background(Color.white.opacity(0.12))
 
-            // Source text (optional)
-            if AppSettings.shared.showSourceText && !r.originalText.isEmpty {
-                Text(r.originalText.count > 120
-                     ? String(r.originalText.prefix(120)) + "…"
-                     : r.originalText)
-                    .font(.system(size: 12))
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            // Scrollable text area for original and translated texts
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(alignment: .leading, spacing: 12) {
+                    // Source text (optional)
+                    if AppSettings.shared.showSourceText && !r.originalText.isEmpty {
+                        Text(r.originalText)
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
-            // Translated text — the hero element
-            Text(r.translatedText)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.primary)
-                .textSelection(.enabled)
-                .lineLimit(8)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                    // Translated text — the hero element
+                    Text(r.translatedText)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.primary)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.trailing, 4) // extra spacing for scroll indicator
+            }
+            .frame(maxHeight: 280) // Capped size. View shrinks dynamically for short text.
+
+            Divider()
+                .background(Color.white.opacity(0.12))
 
             // Footer: copy button
             HStack {
