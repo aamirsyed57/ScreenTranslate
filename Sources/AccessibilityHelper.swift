@@ -22,8 +22,6 @@ final class AccessibilityHelper {
     // MARK: - AX API
 
     private func getSelectedTextViaAX() -> String? {
-        guard AXIsProcessTrusted() else { return nil }
-
         let system: AXUIElement = AXUIElementCreateSystemWide()
         var focusedRef: CFTypeRef?
         guard AXUIElementCopyAttributeValue(system,

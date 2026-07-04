@@ -31,7 +31,7 @@ final class PermissionsManager: ObservableObject {
 
     /// Prompt the OS accessibility dialog AND open System Settings.
     func requestPermission() {
-        let opts = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as String: true] as CFDictionary
+        let opts = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
         AXIsProcessTrustedWithOptions(opts)
         openSettings()
     }
