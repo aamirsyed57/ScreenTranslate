@@ -20,7 +20,7 @@ final class PopupWindowController: NSObject {
         positionPanel(near: screenPoint)
 
         panel?.alphaValue = 0
-        panel?.orderFront(nil)
+        panel?.makeKeyAndOrderFront(nil)
         NSAnimationContext.runAnimationGroup { ctx in
             ctx.duration = 0.15
             panel?.animator().alphaValue = 1
@@ -97,10 +97,11 @@ final class PopupWindowController: NSObject {
         )
         p.isOpaque = false
         p.backgroundColor = .clear
-        p.level = .floating
+        // Using .screenSaver level ensures it sits on top of all standard windows, fullscreen apps, and other overlay menus.
+        p.level = .screenSaver
         p.hasShadow = true
         p.isMovableByWindowBackground = false
-        p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
         p.contentView = vfxView
 
         self.panel = p
